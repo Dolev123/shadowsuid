@@ -12,10 +12,10 @@ def list_sahdow_suids():
             data = f.read()
             if 'C' in data.split('\n')[2]:
                 found_shadow_suids = True
-                print 'Possible Shadow SUID rule: %s' % rule
-                print '\t' + data.replace('\n', '\n\t')
+                print('Possible Shadow SUID rule: %s' % rule)
+                print('\t' + data.replace('\n', '\n\t'))
     if not found_shadow_suids:
-        print 'Hooray! no possible Shadow SUIDs found!'
+        print('Hooray! no possible Shadow SUIDs found!')
 
 def register_shadow_suid(rule_name, suid_path, interpreter_path):
     with open(suid_path, 'rb') as f:
@@ -26,7 +26,7 @@ def register_shadow_suid(rule_name, suid_path, interpreter_path):
 
 def unregister_shadow_suid(rule_name):
     with open(os.path.join(BINFMT_MISC_DIR, rule_name), 'wb') as f:
-        f.write("-1")
+        f.write(b"-1")
 
 
 if __name__ == '__main__':
@@ -36,24 +36,24 @@ if __name__ == '__main__':
     elif len(sys.argv) == 5 and sys.argv[1] == 'register':
         _, _, rule_name, suid_path, interpreter_path = sys.argv
         if os.path.exists(os.path.join(BINFMT_MISC_DIR, rule_name)):
-            print 'Rule name "%s" already exists. failed.'
+            print('Rule name "%s" already exists. failed.')
             exit()
         if not os.path.exists(suid_path):
-            print '"%s" does not exist. failed.' % suid_path
+            print('"%s" does not exist. failed.' % suid_path)
             exit()
         if not os.path.exists(interpreter_path):
-            print '"%s" does not exist. failed.' % interpreter_path
+            print('"%s" does not exist. failed.' % interpreter_path)
             exit()
         register_shadow_suid(rule_name, suid_path, interpreter_path)
 
     elif len(sys.argv) == 3 and sys.argv[1] == 'unregister':
         _, _, rule_name = sys.argv
         if not os.path.exists(os.path.join(BINFMT_MISC_DIR, rule_name)):
-            print 'Rule name "%s" does not exist. failed.'
+            print('Rule name "%s" does not exist. failed.')
             exit()
         unregister_shadow_suid(rule_name)
     else:
-        print 'Usage:'
-        print 'List all Shadow SUIDs:\n\t%s list' % sys.argv[0]
-        print 'Register Shadow SUID:\n\t%s register <rule_name> <suid_path> <interpreter_path>' % sys.argv[0]
-        print 'Unregister Shadow SUID:\n\t%s unregister <rule_name>' % sys.argv[0]
+        print('Usage:')
+        print('List all Shadow SUIDs:\n\t%s list' % sys.argv[0])
+        print('Register Shadow SUID:\n\t%s register <rule_name> <suid_path> <interpreter_path>' % sys.argv[0])
+        print('Unregister Shadow SUID:\n\t%s unregister <rule_name>' % sys.argv[0])

@@ -1,9 +1,9 @@
 #!/usr/bin/python
 import os
 
-ELF = '\x7fELF'
+ELF = b'\x7fELF'
 HEADR_SIZE = 128
-SUID_PERM = 04000
+SUID_PERM = 0o4000
 
 PATH_DIRS = [i for i in os.environ['PATH'].split(':') if os.path.isdir(i)]
 FILE_HEADERS = {}
@@ -27,7 +27,7 @@ def is_suid_unique(suid_path):
         if h == suid_path:
             continue
         if FILE_HEADERS[h] == FILE_HEADERS[suid_path]:
-            print h
+            print(h)
             return False
         return True
 
@@ -47,6 +47,6 @@ if __name__ == '__main__':
     # find all unique suid files
     for suid in SETUID_FILES:
         if is_suid_unique(suid):
-            print suid
+            print(suid)
             # UNIQUE_SUIDS.append(suid)
 
