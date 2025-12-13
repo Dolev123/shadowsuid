@@ -19,7 +19,7 @@ def list_sahdow_suids():
 
 def register_shadow_suid(rule_name, suid_path, interpreter_path):
     with open(suid_path, 'rb') as f:
-        hdr = "\\x"+"\\x".join(x.encode("hex") for x in f.read(128))
+        hdr = "\\x"+"\\x".join(hex(x) for x in f.read(128))
     with open(os.path.join(BINFMT_MISC_DIR, 'register'), 'wb') as f:
         f.write(r":%s:M::%s::%s:C" % (rule_name, hdr, interpreter_path))
 
