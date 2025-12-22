@@ -8,8 +8,6 @@ SUID_PERM = 0o4000
 PATH_DIRS = [i for i in os.environ['PATH'].split(':') if os.path.isdir(i)]
 FILE_HEADERS = {}
 SETUID_FILES = []
-# UNIQUE_SUIDS = []
-
 
 def is_elf(data):
     return data.startswith(ELF)
@@ -32,21 +30,27 @@ def is_suid_unique(suid_path):
         return True
 
 if __name__ == '__main__':
+    if os.geteuid() != 0:
+        print("[*] Not running as root, some suids may not be recognised", file=os.sys.stderr)
     # Iterate all binaries, extarct headers and suids
     for d in PATH_DIRS:
         for f_name in os.listdir(d):
-            file_path = '%s/%s' % (d, f_name)
+            file_path = os.path.join(d, f_name)
             if not os.path.isfile(file_path) or os.path.islink(file_path):
                 continue
-            header = get_header(file_path)
-            if is_elf(header):
-                FILE_HEADERS[file_path] = header
-                if is_suid(file_path):
-                    SETUID_FILES.append(file_path)
+            try:
+                header = get_header(file_path)
+                if is_elf(header):
+                    FILE_HEADERS[file_path] = header
+                    if is_suid(file_path):
+                        SETUID_FILES.append(file_path)
+            except PermissionError:
+                continue
+            except Exception as e:
+                print(f"[!] Error with '{file_path}': {e}", file=os.sys.stderr)
 
     # find all unique suid files
     for suid in SETUID_FILES:
         if is_suid_unique(suid):
             print(suid)
-            # UNIQUE_SUIDS.append(suid)
 
