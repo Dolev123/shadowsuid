@@ -31,3 +31,8 @@ An example of an interpreter which doesn't interfere with the original suid exec
 
 Compile using: `gcc interpreter_dummy.c -o interpreter`
 
+
+### Fork Changes
+
+Update python to work on python 3, instead of 2.  
+Some refactoring and added checks.
