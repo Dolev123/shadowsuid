@@ -4,30 +4,34 @@
 #include <unistd.h>
 #include <errno.h>
 
-int main(int argc, char * argv[], char * envp[])
-{
-    // check where id is
-    
+const char* paths[] = {
+  "/bin/id",
+  "/usr/bin/id",
+};
+// check where id is
+int locate_id() {
     FILE * f = NULL;
-    char* paths[] = {
-      "/bin/id",
-      "/usr/bin/id",
-    };
     int i = 0;
     for (;i < sizeof(paths); i++) {
       if (!(f = fopen(paths[i], "r"))) {
         if (errno == EACCES) {
-          printf("Failed with '%s'\n", paths[i]);
+          fprintf(stderr, "Failed with '%s'\n", paths[i]);
           continue;
         } else {
-          printf("Failed opening '%s' with error: %d, exiting.\n", paths[i], errno);
+          fprintf(stderr, "Failed opening '%s' with error: %d, exiting.\n", paths[i], errno);
           exit(errno);
         }
       }
       break;
     }
+    return id;
+}
+
+int main(int argc, char * argv[], char * envp[])
+{
+    int i = locate_id();
     if (i == sizeof(paths)) {
-      printf("Failed to find a file, exiting.\n");
+      fprintf(stderr, "Failed to find a file, exiting.\n");
       return -1;
     }
     
